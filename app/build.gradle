@@ -2,6 +2,8 @@ plugins {
     id 'kotlin-kapt'
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -94,6 +96,7 @@ dependencies {
     kapt "androidx.room:room-compiler:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
 
+    //Compose
     def composeBom = platform('androidx.compose:compose-bom:2024.02.00')
     implementation composeBom
     androidTestImplementation composeBom
@@ -106,6 +109,16 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5'
     implementation 'androidx.compose.runtime:runtime-livedata'
+
+    //Firebase
+    implementation platform('com.google.firebase:firebase-bom:34.2.0')
+    implementation 'com.google.android.gms:play-services-auth:21.2.0'
+
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.6'
+    implementation 'androidx.fragment:fragment-ktx:1.8.3'
+
+    implementation("com.google.firebase:firebase-auth")
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
