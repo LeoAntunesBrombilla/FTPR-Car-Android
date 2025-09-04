@@ -30,7 +30,6 @@ sealed class Screen(val route: String) {
 class MainActivity : ComponentActivity() {
     private val authViewModel: AuthViewModel by viewModels()
 
-    // Google Sign In launcher
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -58,7 +57,6 @@ class MainActivity : ComponentActivity() {
     private fun startGoogleSignIn() {
         // Fixed: Handle missing default_web_client_id
         try {
-            // Try to get the web client ID from resources
             val webClientId = "CHANGE_ME" // Replace with your actual web client ID
 
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -72,7 +70,6 @@ class MainActivity : ComponentActivity() {
 
         } catch (e: Exception) {
             Log.e("MainActivity", "Google Sign-In configuration error: ${e.message}")
-            // You can show an error message to user or disable Google sign-in
             Log.e("MainActivity", "Make sure you have google-services.json configured properly")
         }
     }
@@ -87,23 +84,19 @@ fun MyApiTestApp(
     val navController = rememberNavController()
     val authState by authViewModel.authState.observeAsState()
 
-    // Check if user is already logged in
     val currentUser = FirebaseAuth.getInstance().currentUser
     val startDestination = if (currentUser != null) Screen.Home.route else Screen.Login.route
 
-    // Handle authentication state changes
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
                 navController.navigate(Screen.Home.route) {
-                    // Clear login screen from back stack
                     popUpTo(Screen.Login.route) { inclusive = true }
                 }
             }
 
             is AuthState.SignedOut -> {
                 navController.navigate(Screen.Login.route) {
-                    // Clear all screens from back stack
                     popUpTo(0) { inclusive = true }
                 }
             }
@@ -121,7 +114,7 @@ fun MyApiTestApp(
             LoginScreen(
                 authViewModel = authViewModel,
                 onGoogleSignIn = onGoogleSignIn,
-                activity = activity // Remove the cast - just pass activity directly
+                activity = activity
             )
         }
 
