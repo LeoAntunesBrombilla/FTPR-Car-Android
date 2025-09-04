@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
         // Fixed: Handle missing default_web_client_id
         try {
             // Try to get the web client ID from resources
-
+            val webClientId = "CHANGE_ME" // Replace with your actual web client ID
 
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(webClientId)
