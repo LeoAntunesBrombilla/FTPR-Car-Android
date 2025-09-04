@@ -1,0 +1,175 @@
+package com.example.myapitest.presentation.ui.auth
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import com.example.myapitest.MainActivity
+import com.example.myapitest.domain.model.AuthState
+import com.example.myapitest.presentation.viewmodel.AuthViewModel
+
+@Composable
+fun LoginScreen(
+    authViewModel: AuthViewModel,
+    onGoogleSignIn: () -> Unit,
+    activity: MainActivity
+) {
+    val authState by authViewModel.authState.observeAsState()
+    var phoneNumber by remember { mutableStateOf("+55 11 91234-5678") }
+    var verificationCode by remember { mutableStateOf("") }
+    var showCodeInput by remember { mutableStateOf(false) }
+
+    // Update UI based on auth state
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.CodeSent -> {
+                showCodeInput = true
+            }
+
+            else -> {}
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Login",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
+
+        // Phone Authentication Section
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Phone Authentication",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                if (!showCodeInput) {
+                    OutlinedTextField(
+                        value = phoneNumber,
+                        onValueChange = { phoneNumber = it },
+                        label = { Text("Phone Number") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            authViewModel.sendPhoneVerification(phoneNumber, activity)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = authState !is AuthState.Loading
+                    ) {
+                        if (authState is AuthState.Loading) {
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                        } else {
+                            Text("Send Code")
+                        }
+                    }
+                } else {
+                    OutlinedTextField(
+                        value = verificationCode,
+                        onValueChange = { verificationCode = it },
+                        label = { Text("Verification Code") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Text(
+                        text = "Use code: 123456 for testing",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            authViewModel.verifyCode(verificationCode)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = authState !is AuthState.Loading
+                    ) {
+                        if (authState is AuthState.Loading) {
+                            CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                        } else {
+                            Text("Verify Code")
+                        }
+                    }
+
+                    TextButton(
+                        onClick = { showCodeInput = false },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Back to Phone Number")
+                    }
+                }
+            }
+        }
+
+        // Divider
+        Text(
+            text = "OR",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+
+        // Google Sign In Section
+        Button(
+            onClick = onGoogleSignIn,
+            modifier = Modifier.fillMaxWidth(),
+            enabled = authState !is AuthState.Loading
+        ) {
+            Text("Sign in with Google")
+        }
+
+        // Error message
+        authState?.let { state ->
+            if (state is AuthState.Error) {
+                Text(
+                    text = state.message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+        }
+    }
+}

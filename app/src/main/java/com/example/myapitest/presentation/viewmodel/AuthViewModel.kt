@@ -1,11 +1,14 @@
-package presentation.ui.viewmodel
+package com.example.myapitest.presentation.viewmodel
 
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.myapitest.MainActivity
 import com.example.myapitest.data.repository.AuthRepository
 import com.example.myapitest.domain.model.AuthState
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 
 class AuthViewModel : ViewModel() {
@@ -18,16 +21,15 @@ class AuthViewModel : ViewModel() {
 
     private val _verificationId = MutableLiveData<String>()
 
-    fun sendPhoneVerification(phoneNumber: String, activity: FragmentActivity) {
+    fun sendPhoneVerification(phoneNumber: String, activity: MainActivity) {
         _authState.value = AuthState.Loading
 
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(credential: com.google.firebase.auth.PhoneAuthCredential) {
-                // Auto-verification
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 signInWithPhoneCredential(credential)
             }
 
-            override fun onVerificationFailed(e: com.google.firebase.FirebaseException) {
+            override fun onVerificationFailed(e: FirebaseException) {
                 _authState.value = AuthState.Error(e.message ?: "Verification failed")
             }
 
@@ -52,7 +54,8 @@ class AuthViewModel : ViewModel() {
                 if (success) {
                     _authState.value = AuthState.Success
                 } else {
-                    _authState.value = AuthState.Error(error ?: "Nao conseguimos verificar o código")
+                    _authState.value =
+                        AuthState.Error(error ?: "Nao conseguimos verificar o código")
                 }
             }
         } else {
@@ -60,7 +63,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun signInWithPhoneCredential(credential: com.google.firebase.auth.PhoneAuthCredential) {
+    fun signInWithPhoneCredential(credential: PhoneAuthCredential) {
         repository.signInWithCredential(credential) { success, error ->
             if (success) {
                 _authState.value = AuthState.Success
@@ -70,17 +73,21 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    fun signInWithGoogle(account: GoogleSignInAccount) {
+        _authState.value = AuthState.Loading
+        repository.signInWithGoogle(account) { success, error ->
+            if (success) {
+                _authState.value = AuthState.Success
+            } else {
+                _authState.value = AuthState.Error(error ?: "Google sign in failed")
+            }
+        }
+    }
+
     fun signOut() {
         repository.signOut()
         _authState.value = AuthState.SignedOut
     }
 
-    fun checkCurrentUser() {
-        val user = repository.getCurrentUser()
-        if (user != null) {
-            _authState.value = AuthState.Success
-        } else {
-            _authState.value = AuthState.SignedOut
-        }
-    }
+    fun getCurrentUser() = repository.getCurrentUser()
 }

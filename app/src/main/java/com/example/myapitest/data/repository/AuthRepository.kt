@@ -1,8 +1,8 @@
 package com.example.myapitest.data.repository
 
+import com.example.myapitest.MainActivity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import java.util.concurrent.TimeUnit
@@ -12,7 +12,7 @@ class AuthRepository {
 
     fun sendVerificationCode(
         phoneNumber: String,
-        activity: androidx.fragment.app.FragmentActivity,
+        activity: MainActivity,
         callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     ) {
         val options = PhoneAuthOptions.newBuilder(firebaseAuth)
@@ -37,7 +37,8 @@ class AuthRepository {
         account: GoogleSignInAccount,
         onComplete: (Boolean, String?) -> Unit
     ) {
-        val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(account.idToken, null)
+        val credential =
+            com.google.firebase.auth.GoogleAuthProvider.getCredential(account.idToken, null)
         signInWithCredential(credential, onComplete)
     }
 
