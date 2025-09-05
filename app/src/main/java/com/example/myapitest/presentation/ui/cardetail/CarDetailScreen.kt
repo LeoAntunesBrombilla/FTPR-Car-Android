@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,6 +37,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapitest.presentation.viewmodel.CarDetailViewModel
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,7 +143,6 @@ fun CarDetailScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Nome do carro
                     Text(
                         text = car!!.name,
                         style = MaterialTheme.typography.headlineMedium,
@@ -156,9 +162,47 @@ fun CarDetailScreen(
                         value = "Lat: ${car!!.place.lat}, Long: ${car!!.place.long}"
                     )
 
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Localização no Mapa",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    CarLocationMap(
+                        latitude = car!!.place.lat,
+                        longitude = car!!.place.long,
+                        carName = car!!.name
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CarLocationMap(latitude: Double, longitude: Double, carName: String) {
+    val carPosition = LatLng(latitude, longitude)
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(carPosition, 15f)
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp)
+            .clip(RoundedCornerShape(12.dp)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
+            Marker(
+                state = MarkerState(position = carPosition),
+                title = carName,
+                snippet = "Localizaçao do carro"
+            )
+        }
+
     }
 }
 

@@ -54,4 +54,19 @@ class CarRepository {
             }
         }
     }
+
+    suspend fun addCar(car: Car): Result<Car> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.addCar(car)
+                if (response.isSuccessful) {
+                    Result.success(response.body() ?: throw Exception("Empty response"))
+                } else {
+                    Result.failure(Exception("API Error: ${response.code()} ${response.message()}"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
 }

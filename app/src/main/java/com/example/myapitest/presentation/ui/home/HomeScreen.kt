@@ -12,11 +12,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +43,7 @@ fun HomeScreen(
     authViewModel: AuthViewModel,
     onSignOut: () -> Unit,
     onCarClick: (String) -> Unit,
+    onAddCarClick: () -> Unit,
     carViewModel: CarViewModel = viewModel()
 ) {
     val user = FirebaseAuth.getInstance().currentUser
@@ -49,92 +55,106 @@ fun HomeScreen(
         carViewModel.loadCars()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Bem vindo!",
-                style = MaterialTheme.typography.headlineLarge
-            )
-
-            user?.let {
-                Text(
-                    text = "Logado com o número: ${it.phoneNumber ?: it.phoneNumber ?: "Desconhecido"}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(8.dp)
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddCarClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Adicionar Carro"
                 )
             }
-
-            Button(
-                onClick = onSignOut,
-                modifier = Modifier.padding(vertical = 16.dp)
-            ) {
-                Text("Sair")
-            }
         }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Bem vindo!",
+                    style = MaterialTheme.typography.headlineLarge
+                )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                user?.let {
+                    Text(
+                        text = "Logado com o número: ${it.phoneNumber ?: it.phoneNumber ?: "Desconhecido"}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
 
-        Text(
-            text = "Lista de carros",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        when {
-            loading -> {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
+                Button(
+                    onClick = onSignOut,
+                    modifier = Modifier.padding(vertical = 16.dp)
                 ) {
-                    CircularProgressIndicator()
+                    Text("Sair")
                 }
             }
 
-            error != null -> {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Error: $error",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Button(
-                        onClick = { carViewModel.loadCars() },
-                        modifier = Modifier.padding(top = 8.dp)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Lista de carros",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            when {
+                loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("Retry")
+                        CircularProgressIndicator()
                     }
                 }
-            }
 
-            cars.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No cars available",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                error != null -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Error: $error",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Button(
+                            onClick = { carViewModel.loadCars() },
+                            modifier = Modifier.padding(top = 8.dp)
+                        ) {
+                            Text("Retry")
+                        }
+                    }
                 }
-            }
 
-            else -> {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(cars) { car ->
-                        CarItem(car = car, onCarClick = onCarClick)
+                cars.isEmpty() -> {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No cars available",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+
+                else -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(cars) { car ->
+                            CarItem(car = car, onCarClick = onCarClick)
+                        }
                     }
                 }
             }

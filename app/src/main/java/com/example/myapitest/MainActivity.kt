@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.myapitest.domain.model.AuthState
+import com.example.myapitest.presentation.ui.addcar.AddCarScreen
 import com.example.myapitest.presentation.ui.auth.LoginScreen
 import com.example.myapitest.presentation.ui.cardetail.CarDetailScreen
 import com.example.myapitest.presentation.viewmodel.AuthViewModel
@@ -129,6 +130,9 @@ fun MyApiTestApp(
                 },
                 onCarClick = { carId ->
                     navController.navigate("car_detail/$carId")
+                },
+                onAddCarClick = {
+                    navController.navigate("add_car")
                 }
             )
         }
@@ -141,6 +145,17 @@ fun MyApiTestApp(
             CarDetailScreen(
                 carId = carId,
                 onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable("add_car") {
+            AddCarScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onCarAdded = {
                     navController.popBackStack()
                 }
             )

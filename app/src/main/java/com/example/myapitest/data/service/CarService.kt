@@ -12,7 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface CarApiService {
-    @GET("car")  // Changed from "cars" to "car"
+    @GET("car")
     suspend fun getCars(): Response<List<Car>>
 
     @GET("car/{id}")

@@ -14,6 +14,9 @@ class CarViewModel : ViewModel() {
     private val _cars = MutableLiveData<List<Car>>()
     val cars: LiveData<List<Car>> = _cars
 
+    private val _car = MutableLiveData<Car>()
+    val car: LiveData<Car> = _car
+
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
 
@@ -26,6 +29,21 @@ class CarViewModel : ViewModel() {
             repository.getCars()
                 .onSuccess { carList ->
                     _cars.value = carList
+                    _error.value = null
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message
+                }
+            _loading.value = false
+        }
+    }
+
+    fun addCar(car: Car) {
+        viewModelScope.launch {
+            _loading.value = true
+            repository.addCar(car)
+                .onSuccess { car ->
+                    _car.value = car
                     _error.value = null
                 }
                 .onFailure { exception ->
