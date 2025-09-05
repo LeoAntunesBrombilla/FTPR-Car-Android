@@ -1,3 +1,4 @@
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth
 fun HomeScreen(
     authViewModel: AuthViewModel,
     onSignOut: () -> Unit,
+    onCarClick: (String) -> Unit,
     carViewModel: CarViewModel = viewModel()
 ) {
     val user = FirebaseAuth.getInstance().currentUser
@@ -132,7 +134,7 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     items(cars) { car ->
-                        CarItem(car = car)
+                        CarItem(car = car, onCarClick = onCarClick)
                     }
                 }
             }
@@ -141,11 +143,12 @@ fun HomeScreen(
 }
 
 @Composable
-fun CarItem(car: Car) {
+fun CarItem(car: Car, onCarClick: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp)),
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onCarClick(car.id) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(

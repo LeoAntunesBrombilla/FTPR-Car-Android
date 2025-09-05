@@ -12,7 +12,7 @@ class CarDetailViewModel : ViewModel() {
     private val repository = CarRepository()
 
     private val _car = MutableLiveData<Car?>()
-    val cal: LiveData<Car?> = _car
+    val car: LiveData<Car?> = _car
 
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading

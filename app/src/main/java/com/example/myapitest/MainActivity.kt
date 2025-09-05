@@ -11,11 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.myapitest.domain.model.AuthState
 import com.example.myapitest.presentation.ui.auth.LoginScreen
+import com.example.myapitest.presentation.ui.cardetail.CarDetailScreen
 import com.example.myapitest.presentation.viewmodel.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -25,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Home : Screen("home")
+    object CarDetail : Screen("car_details")
 }
 
 class MainActivity : ComponentActivity() {
@@ -122,8 +126,25 @@ fun MyApiTestApp(
                 authViewModel = authViewModel,
                 onSignOut = {
                     authViewModel.signOut()
+                },
+                onCarClick = { carId ->
+                    navController.navigate("car_detail/$carId")
                 }
             )
         }
+
+        composable(
+            "car_detail/{carId}",
+            arguments = listOf(navArgument("carId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val carId = backStackEntry.arguments?.getString("carId") ?: ""
+            CarDetailScreen(
+                carId = carId,
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
     }
 }
