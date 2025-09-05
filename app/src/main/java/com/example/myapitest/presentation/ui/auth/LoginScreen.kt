@@ -42,7 +42,6 @@ fun LoginScreen(
     var verificationCode by remember { mutableStateOf("") }
     var showCodeInput by remember { mutableStateOf(false) }
 
-    // Update UI based on auth state
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.CodeSent -> {
@@ -66,7 +65,6 @@ fun LoginScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Phone Authentication Section
         Card(
             modifier = Modifier
                 .fillMaxWidth()
