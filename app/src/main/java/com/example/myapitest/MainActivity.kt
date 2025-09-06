@@ -21,6 +21,7 @@ import com.example.myapitest.presentation.ui.addcar.AddCarScreen
 import com.example.myapitest.presentation.ui.auth.LoginScreen
 import com.example.myapitest.presentation.ui.cardetail.CarDetailScreen
 import com.example.myapitest.presentation.viewmodel.AuthViewModel
+import com.example.myapitest.presentation.viewmodel.CarViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -34,6 +35,7 @@ sealed class Screen(val route: String) {
 
 class MainActivity : ComponentActivity() {
     private val authViewModel: AuthViewModel by viewModels()
+    private val carViewModel: CarViewModel by viewModels()
 
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -53,6 +55,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApiTestApp(
                 authViewModel = authViewModel,
+                carViewModel = carViewModel,
                 onGoogleSignIn = { startGoogleSignIn() },
                 activity = this
             )
@@ -82,6 +85,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApiTestApp(
     authViewModel: AuthViewModel,
+    carViewModel: CarViewModel,
     onGoogleSignIn: () -> Unit,
     activity: MainActivity
 ) {
@@ -133,6 +137,9 @@ fun MyApiTestApp(
                 },
                 onAddCarClick = {
                     navController.navigate("add_car")
+                },
+                onDeleteCarClick = { id ->
+                    carViewModel.deleteCar(id)
                 }
             )
         }

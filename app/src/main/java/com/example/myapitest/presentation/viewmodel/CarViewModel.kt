@@ -52,4 +52,18 @@ class CarViewModel : ViewModel() {
             _loading.value = false
         }
     }
+
+    fun deleteCar(id: String) {
+        viewModelScope.launch {
+            _loading.value = true
+            repository.deleteCar(id)
+                .onSuccess { car ->
+                    _error.value = null
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message
+                }
+            _loading.value = false
+        }
+    }
 }

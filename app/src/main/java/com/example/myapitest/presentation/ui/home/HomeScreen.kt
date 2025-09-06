@@ -14,12 +14,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,7 +46,8 @@ fun HomeScreen(
     onSignOut: () -> Unit,
     onCarClick: (String) -> Unit,
     onAddCarClick: () -> Unit,
-    carViewModel: CarViewModel = viewModel()
+    carViewModel: CarViewModel = viewModel(),
+    onDeleteCarClick: (String) -> Unit,
 ) {
     val user = FirebaseAuth.getInstance().currentUser
     val cars by carViewModel.cars.observeAsState(emptyList())
@@ -153,7 +156,11 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         items(cars) { car ->
-                            CarItem(car = car, onCarClick = onCarClick)
+                            CarItem(
+                                car = car,
+                                onCarClick = onCarClick,
+                                onDeleteCarClick = onDeleteCarClick
+                            )
                         }
                     }
                 }
@@ -163,7 +170,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun CarItem(car: Car, onCarClick: (String) -> Unit) {
+fun CarItem(car: Car, onCarClick: (String) -> Unit, onDeleteCarClick: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -196,6 +203,16 @@ fun CarItem(car: Car, onCarClick: (String) -> Unit) {
                         text = "Placa: ${car.licence}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = { onDeleteCarClick(car.id) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Deletar carro",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
             }
