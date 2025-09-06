@@ -45,6 +45,7 @@ class CarViewModel : ViewModel() {
                 .onSuccess { car ->
                     _car.value = car
                     _error.value = null
+                    loadCars()
                 }
                 .onFailure { exception ->
                     _error.value = exception.message
@@ -59,6 +60,23 @@ class CarViewModel : ViewModel() {
             repository.deleteCar(id)
                 .onSuccess { car ->
                     _error.value = null
+                    loadCars()
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message
+                }
+            _loading.value = false
+        }
+    }
+
+    fun updateCar(id: String, car: Car) {
+        viewModelScope.launch {
+            _loading.value = true
+            repository.updateCar(id, car)
+                .onSuccess { updatedCar ->
+                    _car.value = updatedCar
+                    _error.value = null
+                    loadCars()
                 }
                 .onFailure { exception ->
                     _error.value = exception.message
