@@ -36,4 +36,21 @@ class CarDetailViewModel : ViewModel() {
             _loading.value = false
         }
     }
+
+    fun updateCar(carId: String, car: Car) {
+        viewModelScope.launch {
+            _loading.value = true
+            _error.value = null
+
+            repository.updateCar(carId, car)
+                .onSuccess { updatedCar ->
+                    _car.value = updatedCar
+                    _error.value = null
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message ?: "Erro ao atualizar carro"
+                }
+            _loading.value = false
+        }
+    }
 }

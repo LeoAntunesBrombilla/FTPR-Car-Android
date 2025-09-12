@@ -27,8 +27,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,8 +56,16 @@ fun HomeScreen(
     val loading by carViewModel.loading.observeAsState(false)
     val error by carViewModel.error.observeAsState()
 
+    val carsList by remember {
+        derivedStateOf { cars.toList() }
+    }
+
     LaunchedEffect(Unit) {
         carViewModel.loadCars()
+    }
+
+    val handleDeleteCar = { carId: String ->
+        carViewModel.deleteCar(carId)
     }
 
     Scaffold(
@@ -81,13 +91,13 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Bem vindo!",
+                    text = "Bem-vindo!",
                     style = MaterialTheme.typography.headlineLarge
                 )
 
                 user?.let {
                     Text(
-                        text = "Logado com o número: ${it.phoneNumber ?: it.phoneNumber ?: "Desconhecido"}",
+                        text = "Logado com: ${it.phoneNumber ?: "Usuário"}",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(8.dp)
                     )
@@ -104,7 +114,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Lista de carros",
+                text = "Meus Carros",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -125,7 +135,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Error: $error",
+                            text = "Erro: $error",
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -133,7 +143,7 @@ fun HomeScreen(
                             onClick = { carViewModel.loadCars() },
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
-                            Text("Retry")
+                            Text("Tentar Novamente")
                         }
                     }
                 }
@@ -144,7 +154,7 @@ fun HomeScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No cars available",
+                            text = "Nenhum carro cadastrado",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -155,11 +165,11 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(cars) { car ->
+                        items(carsList, key = { it.id }) { car ->
                             CarItem(
                                 car = car,
                                 onCarClick = onCarClick,
-                                onDeleteCarClick = onDeleteCarClick
+                                onDeleteCarClick = handleDeleteCar
                             )
                         }
                     }
@@ -211,7 +221,7 @@ fun CarItem(car: Car, onCarClick: (String) -> Unit, onDeleteCarClick: (String) -
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Deletar carro",
+                        contentDescription = "Excluir carro",
                         tint = MaterialTheme.colorScheme.error
                     )
                 }

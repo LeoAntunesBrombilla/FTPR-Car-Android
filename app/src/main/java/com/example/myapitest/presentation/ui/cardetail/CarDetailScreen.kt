@@ -73,7 +73,7 @@ fun CarDetailScreen(
     var isEditing by remember { mutableStateOf(false) }
     var hasChanges by remember { mutableStateOf(false) }
 
-    // Estados para edição
+    // TODO - n ta atualizando
     var editName by remember { mutableStateOf("") }
     var editYear by remember { mutableStateOf("") }
     var editLicence by remember { mutableStateOf("") }
@@ -331,8 +331,10 @@ fun CarDetailScreen(
                                             long = location.longitude
                                         )
                                     )
-                                    carViewModel.updateCar(car!!.id, updatedCar)
+                                    carDetailViewModel.updateCar(car!!.id, updatedCar)
+                                    carViewModel.loadCars()
                                     carDetailViewModel.loadCarDetails(carId)
+
                                     isEditing = false
                                 }
                             },

@@ -74,7 +74,7 @@ fun LoginScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Phone Authentication",
+                    text = "Login por Telefone",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -83,7 +83,7 @@ fun LoginScreen(
                     OutlinedTextField(
                         value = phoneNumber,
                         onValueChange = { phoneNumber = it },
-                        label = { Text("Phone Number") },
+                        label = { Text("Número de telefone") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -100,22 +100,16 @@ fun LoginScreen(
                         if (authState is AuthState.Loading) {
                             CircularProgressIndicator(modifier = Modifier.size(16.dp))
                         } else {
-                            Text("Send Code")
+                            Text("Enviar Código")
                         }
                     }
                 } else {
                     OutlinedTextField(
                         value = verificationCode,
                         onValueChange = { verificationCode = it },
-                        label = { Text("Verification Code") },
+                        label = { Text("Código") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text(
-                        text = "Use code: 123456 for testing",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(vertical = 8.dp)
                     )
 
                     Button(
@@ -128,7 +122,7 @@ fun LoginScreen(
                         if (authState is AuthState.Loading) {
                             CircularProgressIndicator(modifier = Modifier.size(16.dp))
                         } else {
-                            Text("Verify Code")
+                            Text("Verificar código")
                         }
                     }
 
@@ -136,7 +130,7 @@ fun LoginScreen(
                         onClick = { showCodeInput = false },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Back to Phone Number")
+                        Text("Voltar para número de telefone")
                     }
                 }
             }
@@ -144,7 +138,7 @@ fun LoginScreen(
 
         // Divider
         Text(
-            text = "OR",
+            text = "Ou",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(vertical = 16.dp)
         )
@@ -155,7 +149,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             enabled = authState !is AuthState.Loading
         ) {
-            Text("Sign in with Google")
+            Text("Login com Google")
         }
 
         // Error message

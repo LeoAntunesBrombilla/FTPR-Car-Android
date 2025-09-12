@@ -242,16 +242,6 @@ fun AddCarScreen(
                 }
             }
 
-            if (firebaseImageUrl.isNotEmpty()) {
-                OutlinedTextField(
-                    value = firebaseImageUrl,
-                    onValueChange = { },
-                    label = { Text("URL do Firebase Storage") },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = false
-                )
-            }
-
             LocationPickerMap(
                 selectedLocation = selectedLocation,
                 onLocationSelected = { latLng ->
