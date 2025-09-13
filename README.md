@@ -1,104 +1,207 @@
-# Exercício: Integração de Autenticação e API REST no Aplicativo Android
+# Guia de Configuração do Projeto Android - Car API Test
 
-Este projeto envolve a criação de uma tela de login com o Firebase, integração de uma API REST e a exibição de dados em um aplicativo Android. Siga as instruções abaixo para configurar e implementar as funcionalidades solicitadas.
+Este guia fornece instruções passo a passo para configurar e testar o projeto Android que integra
+Firebase Authentication, Google Maps e API REST de carros.
 
-### Requisitos
+## 📋 Pré-requisitos
 
-- **IDE**: Android Studio
-- **Bibliotecas**: Firebase Authentication, Firebase Storage, Retrofit (para requisições REST), Google Maps
+- Android Studio instalado
+- Conta Google para acessar Firebase Console e Google Cloud Console
+- JDK 8 ou superior
+- Dispositivo Android ou emulador para testes
 
-## Instruções
+## 🔧 Configuração Inicial
 
-### 1. Tela de Login com Firebase
+### 1. Clone o Projeto
 
-Implemente uma tela de login que use um dos provedores de autenticação do Firebase (recomenda-se usar autenticação por telefone ou Google).
+### 2. Configuração do Firebase
 
-- **Autenticação por telefone**:
-    - Configure o Firebase para aceitar o número de telefone: `+55 11 91234-5678`.
-    - Defina o código de verificação para login de teste como `123456`.
+#### 2.1. Criar Projeto no Firebase Console
 
-- **Autenticação com Google** (caso escolha esta opção) (OPCIONAL):
-    - Habilite a autenticação com Google nas configurações do Firebase Console.
-    - Implemente a lógica de autenticação no aplicativo, usando o provedor de login do Google.
+1. Acesse [Firebase Console](https://console.firebase.google.com/)
+2. Clique em "Adicionar projeto" ou "Create a project"
+3. Digite o nome do projeto (ex: "Car API Test")
+4. Configure o Google Analytics (opcional)
+5. Clique em "Criar projeto"
 
-### 2. Opção de Logout
+#### 2.2. Configurar Firebase Authentication
 
-Adicione uma opção de logout ao aplicativo, permitindo que o usuário saia da conta autenticada. Essa opção deve estar disponível em uma área visível, como o menu principal ou um botão específico na interface.
+1. No Firebase Console, vá para **Authentication** > **Get started**
+2. Na aba **Sign-in method**, habilite:
+    - **Phone** (Autenticação por telefone)
+    - **Google** (opcional, se escolher esta opção)
 
-### 3. Integração com API REST `/car`
+#### 2.3. Configurar Phone Authentication para Testes
 
-Implemente a integração com uma API REST disponível no [Link] (https://github.com/vagnnermartins/FTPR-Car-Api-Node-Express) para exibir e salvar informações de carros no aplicativo.
+1. Em **Authentication** > **Sign-in method** > **Phone**
+2. Role para baixo até **Phone numbers for testing**
+3. Adicione o número: `+5511912345678`
+4. Código de verificação: `123456`
+5. Clique em **Save**
 
-- **Estrutura JSON Esperada**:
-    ```json
-    {
-      "imageUrl": "https://image",
-      "year": "2020/2020",
-      "name": "Gaspar",
-      "licence": "ABC-1234",
-      "place": {
-        "lat": 0,
-        "long": 0
-      }
-    }
-    ```
+#### 2.4. Configurar Firebase Storage
 
-- **Requisitos Específicos**:
-    - O campo `imageUrl` deve apontar para uma imagem armazenada no Firebase Storage.
-    - Exiba a imagem e as informações de cada carro no aplicativo.
-    - Utilize Retrofit para realizar as requisições à API.
+1. No Firebase Console, vá para **Storage** > **Get started**
+2. Escolha **Start in test mode** (para desenvolvimento)
+3. Selecione uma localização (ex: us-central1)
 
-### 4. Exibir Localização no Google Maps
+#### 2.5. Adicionar App Android ao Firebase
 
-Utilize a API do Google Maps para exibir o local (`place`) associado ao carro. Essa localização é especificada pelos campos `lat` e `long` no JSON da API.
+1. No Firebase Console, clique no ícone Android
+2. **Package name**: `com.example.myapitest`
+3. **App nickname**: "Car API Test" (opcional)
+4. **SHA-1**: Execute no terminal do projeto:
+   ```bash
+   ./gradlew signingReport
+   ```
+   Copie o SHA-1 de **debug**
+5. Clique em **Register app**
+6. **IMPORTANTE**: Baixe o arquivo `google-services.json`
+7. Coloque o arquivo em: `app/google-services.json`
 
----
+### 3. Configuração do Google Maps API
 
-### Configuração do Projeto
+#### 3.1. Ativar Google Maps API
 
-1. **Firebase**: Configure o projeto com Firebase Authentication e Firebase Storage. Adicione o `google-services.json` ao projeto para integração.
-2. **Google Maps**: Habilite a API do Google Maps e adicione uma chave de API ao projeto.
-3. **Dependências Gradle**:
-    - **Firebase**: `Firebase Authentication` e `Firebase Storage`
-    - **Retrofit** para a comunicação com a API REST
-    - **Picasso** ou outra biblioteca para carregamento de imagens
-    - **Google Maps SDK** 
+1. Acesse [Google Cloud Console](https://console.cloud.google.com/)
+2. Selecione o mesmo projeto criado no Firebase
+3. Vá para **APIs & Services** > **Library**
+4. Procure por "Maps SDK for Android"
+5. Clique em **Enable**
 
-### Entrega do Exercício
+#### 3.2. Criar API Key
 
-Aqui está a seção detalhada sobre a entrega do projeto com as instruções para fazer um fork:
+1. Em **APIs & Services** > **Credentials**
+2. Clique em **+ CREATE CREDENTIALS** > **API key**
+3. Copie a API key gerada
+4. Clique em **RESTRICT KEY** para configurar restrições
+5. Em **Application restrictions**, selecione **Android apps**
+6. Adicione:
+    - **Package name**: `com.example.myapitest`
+    - **SHA-1**: o mesmo usado no Firebase
+7. Em **API restrictions**, selecione **Maps SDK for Android**
+8. Clique em **Save**
 
----
+#### 3.3. Configurar API Key no Projeto
 
-### Entrega do Projeto
+Abra o arquivo `app/src/main/AndroidManifest.xml` e substitua `TROCAR_AQUI` pela sua API key:
 
-Para enviar o projeto finalizado, siga os passos abaixo:
+```xml
 
-1. **Faça um Fork do Projeto**:
-    - No GitHub, vá até a página do repositório original.
-    - Clique em "Fork" no canto superior direito da página para criar uma cópia do repositório em seu GitHub pessoal.
+<meta-data android:name="com.google.android.geo.API_KEY" android:value="SUA_API_KEY_AQUI" />
+```
 
-2. **Clone o Repositório Forkado**:
-    - No seu perfil do GitHub, acesse o repositório forkado.
-    - Copie o link de clonagem (HTTPS ou SSH).
-    - No terminal, clone o repositório em sua máquina local:
-      ```bash
-      git clone <link-do-repositorio-forkado>
-      ```
+No arquivo `app/src/main/java/com/example/myapitest/data/network/ApiService.kt`, configure a URL
+base:
 
-3. **Implemente as Funcionalidades**:
-    - Siga as instruções do exercício para implementar as funcionalidades.
-    - Após concluir, adicione, faça commit e push das alterações para o repositório forkado.
+```kotlin
+private const val BASE_URL = "http://10.0.2.2:3000/" // Para emulador
+// ou
+private const val BASE_URL = "http://SEU_IP:3000/" // Para dispositivo real
+```
 
-4. **Publicação**:
-    - **Opção 1**: Envie o projeto final no seu repositório forkado. Compartilhe o link do repositório com o instrutor para avaliação.
-    - **Opção 2**: Faça um Pull Request para o repositório original. Para isso:
-        - Acesse o repositório original no GitHub.
-        - Clique em "Compare & pull request" para iniciar o processo de Pull Request.
-        - Descreva as alterações feitas e confirme o envio.
+## 🚀 Como Testar o Projeto
 
-> **Nota**: Certifique-se de que o código está organizado e que todas as funcionalidades foram devidamente testadas antes de enviar o projeto.
+### 1. Verificar Arquivos de Configuração
 
---- 
+Certifique-se de que os seguintes arquivos estão configurados:
 
-Boa entrega e sucesso no desenvolvimento!
+- ✅ `app/google-services.json` (baixado do Firebase)
+- ✅ `app/src/main/AndroidManifest.xml` (com API key do Google Maps)
+- ✅ URL da API REST configurada no código
+
+### 2. Build e Execução
+
+1. Abra o projeto no Android Studio
+2. Aguarde a sincronização do Gradle
+3. Execute no emulador ou dispositivo:
+   ```bash
+   ./gradlew installDebug
+   ```
+
+### 3. Testando as Funcionalidades
+
+#### 3.1. Teste de Login com Telefone
+
+1. Na tela de login, digite: `+55 11 91234-5678`
+2. Clique em "Enviar código"
+3. Digite o código: `123456`
+4. Deve fazer login com sucesso
+
+#### 3.2. Teste da API de Carros
+
+1. Após fazer login, navegue para a lista de carros
+2. Teste as operações CRUD:
+    - **Create**: Adicionar novo carro
+    - **Read**: Visualizar lista e detalhes
+    - **Update**: Editar informações do carro
+    - **Delete**: Remover carro
+
+#### 3.3. Teste do Google Maps
+
+1. Na tela de detalhes do carro, verifique se o mapa carrega
+2. Na tela de adicionar/editar carro, teste o seletor de localização
+
+### 4. Upload de Imagens para Firebase Storage
+
+1. Na tela de adicionar carro, selecione uma imagem
+2. A imagem deve ser enviada para Firebase Storage
+3. A URL da imagem deve ser salva no banco de dados
+
+## 🔍 Solução de Problemas Comuns
+
+### Problema: App não compila
+
+**Solução**: Verifique se o `google-services.json` está na pasta `app/`
+
+### Problema: Mapa não carrega
+
+**Solução**:
+
+- Verifique se a API key está correta no `AndroidManifest.xml`
+- Certifique-se de que "Maps SDK for Android" está habilitado
+
+### Problema: Login não funciona
+
+**Solução**:
+
+- Verifique se o número de teste está configurado no Firebase
+- Confirme se o SHA-1 está correto no Firebase Console
+
+### Problema: API não conecta
+
+**Solução**:
+
+- Para emulador: use `http://10.0.2.2:PORT`
+- Para dispositivo: use o IP real da máquina
+- Verifique se a API está rodando
+
+### Problema: Upload de imagem falha
+
+**Solução**:
+
+- Verifique permissões de storage no `AndroidManifest.xml`
+- Confirme se Firebase Storage está configurado
+
+## 📱 Estruturas de Dados
+
+### Car Model
+
+```json
+{
+  "id": "string",
+  "imageUrl": "https://firebase-storage-url",
+  "year": "2020/2020",
+  "name": "Nome do Carro",
+  "licence": "ABC-1234",
+  "place": {
+    "lat": -23.5505,
+    "long": -46.6333
+  }
+}
+```
+
+### Números de Teste Firebase
+
+- **Telefone**: `+55 11 91234-5678`
+- **Código**: `123456`
