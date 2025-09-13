@@ -136,22 +136,6 @@ fun LoginScreen(
             }
         }
 
-        // Divider
-        Text(
-            text = "Ou",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-
-        // Google Sign In Section
-        Button(
-            onClick = onGoogleSignIn,
-            modifier = Modifier.fillMaxWidth(),
-            enabled = authState !is AuthState.Loading
-        ) {
-            Text("Login com Google")
-        }
-
         // Error message
         authState?.let { state ->
             if (state is AuthState.Error) {
