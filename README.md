@@ -4,12 +4,17 @@
 
 ## 📋 Funcionalidades Implementadas
 
+- [x] **Utilização do Compose**
 - [x] **Tela de Login com Firebase (Autenticação por Telefone)**
 - [x] **Opção de Logout**
 - [x] **Integração com API REST `/car` (CRUD Completo)**
 - [x] **Firebase Storage para Upload de Imagens**
 - [x] **Exibição de Localização no Google Maps**
 - [x] **Seleção de Localização no Mapa**
+
+
+https://github.com/user-attachments/assets/14e3716d-ca50-4bd6-86b1-23d0a91b6a56
+
 
 ## ⚠️ Funcionalidades Pendentes
 
