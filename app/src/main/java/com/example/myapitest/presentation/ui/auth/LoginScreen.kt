@@ -136,7 +136,6 @@ fun LoginScreen(
             }
         }
 
-        // Error message
         authState?.let { state ->
             if (state is AuthState.Error) {
                 Text(

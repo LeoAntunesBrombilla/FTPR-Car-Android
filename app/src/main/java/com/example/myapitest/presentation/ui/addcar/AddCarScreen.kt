@@ -68,7 +68,6 @@ fun AddCarScreen(
     var imageUrl by remember { mutableStateOf("") }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
 
-    // Year picker state
     var showYearPicker by remember { mutableStateOf(false) }
 
     val loading by carViewModel.loading.observeAsState(false)
@@ -98,22 +97,18 @@ fun AddCarScreen(
 
     LaunchedEffect(selectedImageUri) {
         selectedImageUri?.let { uri ->
-            println("DEBUG: Iniciando upload da imagem: $uri") // Debug
             imageUploading = true
             try {
                 val imageUploadRepository = ImageUploadRepository()
                 val result = imageUploadRepository.uploadCarImage(uri)
                 result.onSuccess { url ->
-                    println("DEBUG: Upload bem-sucedido: $url") // Debug
                     firebaseImageUrl = url
                     imageUploadError = null
                     imageUrl = url
                 }.onFailure { exception ->
-                    println("DEBUG: Erro no upload: ${exception.message}") // Debug
                     imageUploadError = "Erro ao enviar imagem: ${exception.message}"
                 }
             } catch (e: Exception) {
-                println("DEBUG: Exceção geral: ${e.message}") // Debug
                 imageUploadError = "Erro inesperado: ${e.message}"
             } finally {
                 imageUploading = false
@@ -121,7 +116,6 @@ fun AddCarScreen(
         }
     }
 
-    // Year picker dialog
     if (showYearPicker) {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         val years = (1950..currentYear + 5).toList().reversed()

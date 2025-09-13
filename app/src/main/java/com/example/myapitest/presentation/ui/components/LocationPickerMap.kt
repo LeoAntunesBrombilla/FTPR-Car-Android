@@ -25,7 +25,7 @@ fun LocationPickerMap(
     selectedLocation: LatLng?,
     onLocationSelected: (LatLng) -> Unit,
     modifier: Modifier = Modifier,
-    initialLocation: LatLng = LatLng(-23.5505, -46.6333) // São Paulo como padrão
+    initialLocation: LatLng = LatLng(-23.5505, -46.6333)
 ) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
